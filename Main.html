@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Hunt Royale</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #c8f135;
+    --accent2: #ff4d4d;
+    --text: #f0f0f0;
+    --text-muted: #666;
+    --daily: #3dd6f5;
+    --onetime: #f5a623;
+    --milestone: #c8f135;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── SCREENS ─── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ─── LOGIN ─── */
+  #loginScreen {
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--bg);
+    position: relative;
+  }
+
+  .login-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 80%, #c8f13510 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, #ff4d4d08 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 28px;
+    width: 100%;
+    max-width: 380px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .game-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .game-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+
+  .input-group {
+    margin-bottom: 16px;
+  }
+
+  .input-group label {
+    display: block;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .input-group input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .input-group input:focus {
+    border-color: var(--accent);
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+  .login-switch {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .login-switch span {
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .error-msg {
+    background: #ff4d4d18;
+    border: 1px solid #ff4d4d44;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    font-family: 'DM Mono', monospace;
+    display: none;
+  }
+
+  /* ─── MAIN DASHBOARD ─── */
+  #dashScreen {
+    padding-bottom: 100px;
+  }
+
+  .top-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .top-bar-left .player-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .top-bar-left .player-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  .btn-logout {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-logout:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  .score-hero {
+    padding: 28px 20px 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  .score-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .score-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px;
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: -2px;
+  }
+
+  .score-number span {
+    font-size: 32px;
+    color: var(--text-muted);
+    vertical-align: top;
+    margin-top: 16px;
+    display: inline-block;
+  }
+
+  .vs-strip {
+    margin: 0 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .vs-player { text-align: center; flex: 1; }
+  .vs-player .vs-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .vs-player .vs-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .vs-divider {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--text-muted);
+    padding: 0 12px;
+  }
+
+  .vs-player.losing .vs-score { color: var(--accent2); }
+  .vs-player.winning .vs-name::after {
+    content: ' 🔥';
+  }
+
+  /* sections */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-label.daily { color: var(--daily); }
+  .section-label.onetime { color: var(--onetime); }
+  .section-label.milestone { color: var(--milestone); }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 0 20px;
+    margin-bottom: 24px;
+  }
+
+  .action-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .action-card:active { transform: scale(0.97); }
+
+  .action-card.daily { border-top: 2px solid var(--daily); }
+  .action-card.onetime { border-top: 2px solid var(--onetime); }
+  .action-card.milestone { border-top: 2px solid var(--milestone); }
+  .action-card.disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .action-card .action-pts {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .action-card.daily .action-pts { color: var(--daily); }
+  .action-card.onetime .action-pts { color: var(--onetime); }
+  .action-card.milestone .action-pts { color: var(--milestone); }
+
+  .action-card .action-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .action-card .done-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #1a1a1a;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+
+  /* log section */
+  .log-section {
+    padding: 0 20px;
+    margin-bottom: 24px;
+  }
+
+  .log-entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .log-pts {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    min-width: 44px;
+    text-align: right;
+    line-height: 1;
+  }
+
+  .log-info .log-action {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .log-info .log-reason {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .log-info .log-time {
+    font-size: 10px;
+    color: #444;
+    font-family: 'DM Mono', monospace;
+    margin-top: 4px;
+  }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    padding: 28px 24px 40px;
+    width: 100%;
+    max-width: 480px;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-action-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .modal-pts {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .modal-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    resize: none;
+    height: 100px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+
+  .modal-textarea:focus { border-color: var(--accent); }
+
+  .modal-btns {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-cancel {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .btn-confirm {
+    flex: 2;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-confirm:active { opacity: 0.85; }
+
+  /* ─── SETUP SCREEN ─── */
+  #setupScreen {
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--bg);
+  }
+
+  .setup-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .setup-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .setup-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 12px 24px;
+    border-radius: 50px;
+    z-index: 9999;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+
+  /* tabs */
+  .tabs {
+    display: flex;
+    padding: 0 20px;
+    margin-bottom: 20px;
+    gap: 8px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: var(--surface);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ─── LOGIN ─── -->
+<div id="loginScreen" class="screen active">
+  <div class="login-bg"></div>
+  <div class="login-box">
+    <div class="game-title">JHR</div>
+    <div class="game-sub">JOB HUNT ROYALE — LOG IN</div>
+    <div class="error-msg" id="loginError">Wrong ID or password.</div>
+    <div class="input-group">
+      <label>Player ID</label>
+      <input type="text" id="loginId" placeholder="jaswant / yatharth" autocomplete="off">
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">ENTER THE GAME</button>
+    <div class="login-switch">New player? <span onclick="showSetup()">Create account</span></div>
+  </div>
+</div>
+
+<!-- ─── SETUP ─── -->
+<div id="setupScreen" class="screen">
+  <div class="setup-box">
+    <div class="setup-title">NEW PLAYER</div>
+    <div class="setup-sub">Create your account. One account per player.</div>
+    <div class="error-msg" id="setupError"></div>
+    <div class="input-group">
+      <label>Player ID</label>
+      <input type="text" id="setupId" placeholder="e.g. jaswant" autocomplete="off">
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="setupPass" placeholder="Choose password">
+    </div>
+    <button class="btn-primary" onclick="doSetup()">CREATE ACCOUNT</button>
+    <div class="login-switch">Already have account? <span onclick="showLogin()">Log in</span></div>
+  </div>
+</div>
+
+<!-- ─── DASHBOARD ─── -->
+<div id="dashScreen" class="screen">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="player-label">PLAYER</div>
+      <div class="player-name" id="headerName">—</div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">LOGOUT</button>
+  </div>
+
+  <!-- VS Strip -->
+  <div style="padding: 20px 20px 0;">
+    <div class="vs-strip" id="vsStrip">
+      <div class="vs-player" id="vsMe">
+        <div class="vs-name" id="vsMeName">ME</div>
+        <div class="vs-score" id="vsMeScore">0</div>
+      </div>
+      <div class="vs-divider">VS</div>
+      <div class="vs-player" id="vsOpp">
+        <div class="vs-name" id="vsOppName">OPPONENT</div>
+        <div class="vs-score" id="vsOppScore">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('actions', this)">ACTIONS</button>
+    <button class="tab-btn" onclick="switchTab('log', this)">LOG</button>
+  </div>
+
+  <!-- ACTIONS TAB -->
+  <div id="tab-actions" class="tab-content active">
+
+    <div class="section-label daily">DAILY ACTIONS</div>
+    <div class="actions-grid" id="dailyGrid"></div>
+
+    <div class="section-label onetime">ONE-TIME ACTIONS</div>
+    <div class="actions-grid" id="onetimeGrid"></div>
+
+    <div class="section-label milestone">MILESTONES</div>
+    <div class="actions-grid" id="milestoneGrid"></div>
+
+  </div>
+
+  <!-- LOG TAB -->
+  <div id="tab-log" class="tab-content">
+    <div class="log-section" id="logList"></div>
+  </div>
+
+</div>
+
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-action-name" id="modalTitle">—</div>
+    <div class="modal-pts" id="modalPts">+0 points</div>
+    <textarea class="modal-textarea" id="modalReason" placeholder="Reason ya note likho — kya kiya aaj..."></textarea>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">CANCEL</button>
+      <button class="btn-confirm" onclick="confirmAction()">LOG IT +PTS</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ──────────────────────────────────────────────
+// DATA — ACTIONS CONFIG
+// ──────────────────────────────────────────────
+const ACTIONS = {
+  daily: [
+    { id: 'd1', name: 'Naukri.com Refresh', pts: 2 },
+    { id: 'd2', name: 'Job Apply', pts: 3 },
+    { id: 'd3', name: 'Referral Maanga', pts: 7 },
+    { id: 'd4', name: 'HR Follow-up', pts: 4 },
+    { id: 'd5', name: 'Mock Interview', pts: 10 },
+  ],
+  onetime: [
+    { id: 'o1', name: 'Resume Update', pts: 5 },
+    { id: 'o2', name: 'LinkedIn Optimize', pts: 5 },
+  ],
+  milestone: [
+    { id: 'm1', name: 'HR Response Aaya', pts: 5 },
+    { id: 'm2', name: 'Interview Round Clear', pts: 20 },
+    { id: 'm3', name: 'OFFER LETTER 🎉', pts: 100 },
+  ]
+};
+
+// ──────────────────────────────────────────────
+// STORAGE HELPERS
+// ──────────────────────────────────────────────
+function getUsers() { return JSON.parse(localStorage.getItem('jhr_users') || '{}'); }
+function saveUsers(u) { localStorage.setItem('jhr_users', JSON.stringify(u)); }
+function getCurrentUser() { return localStorage.getItem('jhr_current'); }
+function setCurrentUser(id) { localStorage.setItem('jhr_current', id); }
+
+function getUserData(id) {
+  const users = getUsers();
+  if (!users[id]) return null;
+  return users[id];
+}
+
+function saveUserData(id, data) {
+  const users = getUsers();
+  users[id] = data;
+  saveUsers(users);
+}
+
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+// ──────────────────────────────────────────────
+// SCREENS
+// ──────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showLogin() { showScreen('loginScreen'); }
+function showSetup() { showScreen('setupScreen'); }
+
+// ──────────────────────────────────────────────
+// AUTH
+// ──────────────────────────────────────────────
+function doLogin() {
+  const id = document.getElementById('loginId').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  const users = getUsers();
+  const errEl = document.getElementById('loginError');
+
+  if (!users[id] || users[id].password !== pass) {
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  setCurrentUser(id);
+  loadDashboard();
+  showScreen('dashScreen');
+}
+
+function doSetup() {
+  const id = document.getElementById('setupId').value.trim().toLowerCase();
+  const pass = document.getElementById('setupPass').value;
+  const errEl = document.getElementById('setupError');
+  const users = getUsers();
+
+  if (!id || !pass) { errEl.style.display = 'block'; errEl.textContent = 'Fill in both fields.'; return; }
+  if (users[id]) { errEl.style.display = 'block'; errEl.textContent = 'ID already taken. Choose another.'; return; }
+
+  errEl.style.display = 'none';
+  users[id] = {
+    password: pass,
+    score: 0,
+    log: [],
+    dailyDone: {},    // { 'YYYY-MM-DD': ['d1','d3'] }
+    onetimeDone: [],  // ['o1']
+  };
+  saveUsers(users);
+  setCurrentUser(id);
+  loadDashboard();
+  showScreen('dashScreen');
+}
+
+function doLogout() {
+  localStorage.removeItem('jhr_current');
+  showScreen('loginScreen');
+}
+
+// ──────────────────────────────────────────────
+// DASHBOARD
+// ──────────────────────────────────────────────
+function loadDashboard() {
+  const uid = getCurrentUser();
+  const data = getUserData(uid);
+  if (!data) return;
+
+  document.getElementById('headerName').textContent = uid.toUpperCase();
+
+  // Render action grids
+  renderGrid('dailyGrid', ACTIONS.daily, 'daily', data);
+  renderGrid('onetimeGrid', ACTIONS.onetime, 'onetime', data);
+  renderGrid('milestoneGrid', ACTIONS.milestone, 'milestone', data);
+
+  // VS strip
+  renderVS(uid, data);
+
+  // Log
+  renderLog(data);
+}
+
+function renderGrid(gridId, actions, type, data) {
+  const grid = document.getElementById(gridId);
+  const today = todayStr();
+  grid.innerHTML = '';
+
+  actions.forEach(action => {
+    let disabled = false;
+
+    if (type === 'onetime') {
+      disabled = data.onetimeDone.includes(action.id);
+    } else if (type === 'daily') {
+      const todayDone = data.dailyDone[today] || [];
+      disabled = todayDone.includes(action.id);
+    }
+
+    const card = document.createElement('div');
+    card.className = `action-card ${type}${disabled ? ' disabled' : ''}`;
+    card.innerHTML = `
+      <div class="action-pts">+${action.pts}</div>
+      <div class="action-name">${action.name}</div>
+      ${disabled ? '<div class="done-badge">✓</div>' : ''}
+    `;
+    if (!disabled) {
+      card.onclick = () => openModal(action, type);
+    }
+    grid.appendChild(card);
+  });
+}
+
+function renderVS(uid, data) {
+  const users = getUsers();
+  const allIds = Object.keys(users).filter(k => k !== uid);
+  const opponent = allIds[0]; // assumes 2 players
+
+  document.getElementById('vsMeName').textContent = uid.toUpperCase();
+  document.getElementById('vsMeScore').textContent = data.score;
+
+  if (opponent) {
+    const oppData = users[opponent];
+    document.getElementById('vsOppName').textContent = opponent.toUpperCase();
+    document.getElementById('vsOppScore').textContent = oppData.score;
+
+    const meEl = document.getElementById('vsMe');
+    const oppEl = document.getElementById('vsOpp');
+    meEl.classList.remove('winning','losing');
+    oppEl.classList.remove('winning','losing');
+
+    if (data.score > oppData.score) {
+      meEl.classList.add('winning');
+      oppEl.classList.add('losing');
+    } else if (oppData.score > data.score) {
+      oppEl.classList.add('winning');
+      meEl.classList.add('losing');
+    }
+  }
+}
+
+function renderLog(data) {
+  const logList = document.getElementById('logList');
+  const log = [...data.log].reverse();
+
+  if (log.length === 0) {
+    logList.innerHTML = '<div class="empty-state">Koi action log nahi hua abhi.<br>Upar se koi action karo.</div>';
+    return;
+  }
+
+  logList.innerHTML = log.map(entry => `
+    <div class="log-entry">
+      <div class="log-pts">+${entry.pts}</div>
+      <div class="log-info">
+        <div class="log-action">${entry.name}</div>
+        ${entry.reason ? `<div class="log-reason">"${entry.reason}"</div>` : ''}
+        <div class="log-time">${entry.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ──────────────────────────────────────────────
+// TABS
+// ──────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+
+  if (name === 'log') {
+    const uid = getCurrentUser();
+    const data = getUserData(uid);
+    if (data) renderLog(data);
+  }
+}
+
+// ──────────────────────────────────────────────
+// MODAL
+// ──────────────────────────────────────────────
+let pendingAction = null;
+let pendingType = null;
+
+function openModal(action, type) {
+  pendingAction = action;
+  pendingType = type;
+  document.getElementById('modalTitle').textContent = action.name.toUpperCase();
+  document.getElementById('modalPts').textContent = `+${action.pts} points`;
+  document.getElementById('modalReason').value = '';
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  pendingAction = null;
+  pendingType = null;
+}
+
+function confirmAction() {
+  if (!pendingAction) return;
+  const reason = document.getElementById('modalReason').value.trim();
+  const uid = getCurrentUser();
+  const data = getUserData(uid);
+  const today = todayStr();
+
+  // Mark done
+  if (pendingType === 'onetime') {
+    data.onetimeDone.push(pendingAction.id);
+  } else if (pendingType === 'daily') {
+    if (!data.dailyDone[today]) data.dailyDone[today] = [];
+    data.dailyDone[today].push(pendingAction.id);
+  }
+  // Milestones are always repeatable
+
+  // Add pts
+  data.score += pendingAction.pts;
+
+  // Log entry
+  const now = new Date();
+  data.log.push({
+    name: pendingAction.name,
+    pts: pendingAction.pts,
+    reason: reason,
+    time: now.toLocaleDateString('en-IN', { day:'numeric', month:'short' }) + ' ' +
+          now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' }),
+  });
+
+  saveUserData(uid, data);
+  closeModal();
+  loadDashboard();
+  showToast(`+${pendingAction.pts} pts added! 🔥`);
+
+  if (pendingAction.id === 'm3') {
+    setTimeout(() => showToast('🏆 OFFER LETTER! GAME OVER — TU JEET GAYA!'), 1500);
+  }
+}
+
+// ──────────────────────────────────────────────
+// TOAST
+// ──────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+const savedUser = getCurrentUser();
+if (savedUser && getUserData(savedUser)) {
+  loadDashboard();
+  showScreen('dashScreen');
+}
+</script>
+</body>
+</html>
